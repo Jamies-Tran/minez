@@ -1,0 +1,29 @@
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+#            - id: administration-service
+#              uri: lb://ADMINISTRATION-SERVICE
+#              predicates:
+#                - Path=/api/administration-service/**
+#              filters:
+#                - RewritePath=/api/administration-service/(?<segment>.*),/${segment}
+            - id: iam-service
+              uri: lb://IAM-SERVICE
+              predicates:
+                - Path=/api/iam-service/**
+              filters:
+                - RewritePath=/api/iam-service/(?<segment>.*),/${segment}
+  application:
+    name: gateway
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-dev:8761/eureka
+      
+server:
+  port: 8082
