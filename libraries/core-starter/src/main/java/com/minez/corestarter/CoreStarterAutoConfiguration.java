@@ -4,7 +4,6 @@ import com.minez.corestarter.advice.GlobalRestAdviceController;
 import com.minez.corestarter.auditor.AuditorProvider;
 import com.minez.corestarter.auditor.BaseAuditorConfiguration;
 import com.minez.corestarter.auth.*;
-import com.skedio.corestarter.auth.*;
 import com.minez.corestarter.configuration.JacksonMapperConfig;
 import com.minez.corestarter.logs.FunctionLogAspect;
 import com.minez.corestarter.trace.TraceFilter;

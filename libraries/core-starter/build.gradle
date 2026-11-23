@@ -45,7 +45,6 @@ dependencies {
     api 'org.springframework.boot:spring-boot-starter-data-jpa'
     api 'org.springframework.boot:spring-boot-autoconfigure'
     api 'org.projectlombok:lombok'
-    api 'org.mapstruct:mapstruct:1.5.5.Final'
     api 'org.springframework.modulith:spring-modulith-starter-core:2.2.0-M2'
     api 'org.springframework.boot:spring-boot-starter-security'
     api 'org.springframework.boot:spring-boot-starter-aop'
@@ -80,7 +79,7 @@ publishing {
     repositories {
         maven {
             name="GithubPackage"
-            url=uri("https://maven.pkg.github.com/Jamies-Tran/skedio")
+            url=uri("https://maven.pkg.github.com/Jamies-Tran/minez")
             credentials {
                 username=GIT_USERNAME
                 password=GIT_TOKEN

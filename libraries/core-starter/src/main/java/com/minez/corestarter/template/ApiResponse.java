@@ -12,20 +12,30 @@ import java.util.List;
 public record ApiResponse<T>(
         String traceId,
         Boolean isSuccess,
-        String message,
+        String dataType,
         LocalDateTime responseAt,
         List<String> messages,
         String errorCode,
         Metadata metadata,
-        T data
+        T value,
+        List<T> data
 ) {
+
+    enum EnumDataType {
+        EMPTY,
+        OBJECT,
+        LIST,
+        PAGE
+    }
 
     @Builder
     public record Metadata(
             Integer current,
             Integer pageSize,
             Long totalElements,
-            Integer totalPages
+            Integer totalPages,
+            Boolean previous,
+            Boolean next
     ) {
         public static Metadata ofEmpty() {
             return null;
@@ -37,6 +47,8 @@ public record ApiResponse<T>(
                     .pageSize(data.size())
                     .totalElements((long) data.size())
                     .totalPages(1)
+                    .previous(false)
+                    .next(false)
                     .build();
         }
 
@@ -46,31 +58,33 @@ public record ApiResponse<T>(
                     .pageSize(data.getSize())
                     .totalElements(data.getTotalElements())
                     .totalPages(data.getTotalPages())
+                    .next(data.hasNext())
+                    .previous(data.hasPrevious())
                     .build();
         }
     }
 
-    public static <T> ApiResponse<List<T>> list(List<T> data) {
+    public static <T> ApiResponse<T> list(List<T> data) {
         Metadata metadata = Metadata.ofList(data);
-        return ApiResponse.<List<T>>builder()
-                .responseAt(LocalDateTime.now())
-                .isSuccess(true)
-                .message("success")
+        return ApiResponse.<T>builder()
                 .traceId(MDC.get("traceId"))
+                .isSuccess(true)
+                .dataType(EnumDataType.LIST.name())
+                .responseAt(LocalDateTime.now())
                 .metadata(metadata)
                 .data(data)
                 .build();
     }
 
-    public static <T> ApiResponse<List<T>> page(Page<T> data) {
+    public static <T> ApiResponse<T> page(Page<T> data) {
         Metadata metadata = Metadata.ofPage(data);
         List<T> content = data.getContent();
-        return ApiResponse.<List<T>>builder()
-                .responseAt(LocalDateTime.now())
-                .isSuccess(true)
-                .message("success")
-                .metadata(metadata)
+        return ApiResponse.<T>builder()
                 .traceId(MDC.get("traceId"))
+                .isSuccess(true)
+                .dataType(EnumDataType.PAGE.name())
+                .responseAt(LocalDateTime.now())
+                .metadata(metadata)
                 .data(content)
                 .build();
     }
@@ -78,12 +92,12 @@ public record ApiResponse<T>(
     public static <T> ApiResponse<T> value(T data) {
         Metadata metadata = Metadata.ofEmpty();
         return ApiResponse.<T>builder()
-                .responseAt(LocalDateTime.now())
-                .isSuccess(true)
-                .message("success")
-                .metadata(metadata)
                 .traceId(MDC.get("traceId"))
-                .data(data)
+                .isSuccess(true)
+                .dataType(EnumDataType.OBJECT.name())
+                .responseAt(LocalDateTime.now())
+                .metadata(metadata)
+                .value(data)
                 .build();
     }
 
@@ -93,7 +107,7 @@ public record ApiResponse<T>(
                 .responseAt(LocalDateTime.now())
                 .isSuccess(false)
                 .errorCode(applicationException.getErrorCode().getCode())
-                .message(applicationException.getMessage())
+                .messages(List.of(applicationException.getMessage()))
                 .metadata(metadata)
                 .traceId(MDC.get("traceId"))
                 .build();
@@ -102,9 +116,10 @@ public record ApiResponse<T>(
     public static ApiResponse<List<String>> ofListException(List<String> errors) {
         Metadata metadata = Metadata.ofEmpty();
         return ApiResponse.<List<String>>builder()
-                .responseAt(LocalDateTime.now())
-                .isSuccess(false)
                 .traceId(MDC.get("traceId"))
+                .isSuccess(false)
+                .dataType(EnumDataType.EMPTY.name())
+                .responseAt(LocalDateTime.now())
                 .metadata(metadata)
                 .messages(errors)
                 .build();

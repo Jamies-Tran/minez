@@ -1,5 +1,5 @@
 package com.minez.corestarter.template;
 
-public interface CommandTemplate<A, R> {
-    R handle(A command);
+public interface CommandTemplate<A, Result> {
+    Result handle(A command);
 }
