@@ -8,7 +8,7 @@ services:
       - "3306:3306"
     volumes:
       - ./migration/minez-migration/flyway/mysql/init:/docker-entrypoint-initdb.d
-      - ./database/mysql/dev/data:/var/lib/mysql
+      - ./infrastructures/databases/mysql/dev/data:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 123
@@ -28,7 +28,7 @@ services:
       - "3307:3306"
     volumes:
       - ./migration/minez-migration/flyway/mysql/init:/docker-entrypoint-initdb.d
-      - ./infrastructure/database/mysql/local/data:/var/lib/mysql
+      - ./infrastructures/databases/mysql/local/data:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 123
@@ -45,8 +45,8 @@ services:
     networks:
       - minez-dev
     volumes:
-      - ./cache/redis/dev/data:/data
-      - ./cache/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./infrastructures/caches/redis/dev/data:/data
+      - ./infrastructures/caches/redis/redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     restart: always
     ports:
@@ -64,7 +64,7 @@ services:
     networks:
       - minez-dev
     volumes:
-      - ./database/mongo/dev/data:/data/db
+      - ./infrastructures/databases/mongo/dev/data:/data/db
     restart: always
     ports:
       - "27017:27017"
@@ -101,7 +101,7 @@ services:
        RABBITMQ_DEFAULT_USER: minez
        RABBITMQ_DEFAULT_PASS: 123
     volumes:
-      - ./database/rabbitmq/dev/data:/var/lib/rabbitmq
+      - ./infrastructures/databases/rabbitmq/dev/data:/var/lib/rabbitmq
 
   iam-flyway-dev:
     image: flyway/flyway:latest
