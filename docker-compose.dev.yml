@@ -114,10 +114,26 @@ services:
       - "-password=123"
       - "migrate"
     volumes:
-      - ./migration/minez-migration/flyway/mysql/administration:/flyway/sql
+      - ./migration/minez-migration/flyway/mysql/iam:/flyway/sql
     depends_on:
       minez-db-dev:
           condition: service_healthy
+          
+  iam-flyway-local:
+    image: flyway/flyway:latest
+    container_name: iam-migration-local
+    networks:
+      - minez-dev
+    command:
+      - "-url=jdbc:mysql://minez-db-local:3306/iam?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh"
+      - "-user=root"
+      - "-password=123"
+      - "migrate"
+    volumes:
+      - ./migration/minez-migration/flyway/mysql/iam:/flyway/sql
+    depends_on:
+      minez-db-dev:
+        condition: service_healthy
 
 #  auth-flyway-dev:
 #    image: flyway/flyway:latest
