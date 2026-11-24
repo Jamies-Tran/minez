@@ -1,9 +1,12 @@
 package com.minez.iamservice.resourcemanagement.resources.repository;
 
 import com.minez.iamservice.resourcemanagement.resources.domain.Resource;
+import com.minez.iamservice.resourcemanagement.resources.domain.argument.ResourceSearch;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -21,5 +24,10 @@ public class ResourceRepository {
         entity.applyDomain(resource);
         ResourceJpaEntity saved = repository.save(entity);
         return saved.convertDomain();
+    }
+
+    public Page<Resource> findAll(ResourceSearch search, PageRequest pageRequest) {
+        Page<ResourceJpaEntity> entity = repository.findAll(search, pageRequest);
+        return entity.map(ResourceJpaEntity::convertDomain);
     }
 }
