@@ -173,23 +173,23 @@ services:
     depends_on:
       - discovery-dev
 
-#  administration-dev:
-#    build:
-#      context: ./business-services/administration-service/.
-#    container_name: administration-dev
-#    networks:
-#      - minez-dev
-#    ports:
-#      - "8081:8081"
-#    environment:
-#      SPRING_PROFILES_ACTIVE: dev
-#    depends_on:
-#      minez-db-dev:
-#        condition: service_healthy
-#      minez-cache-dev:
-#        condition: service_healthy
-#      discovery-dev:
-#        condition: service_started
+  iam-dev:
+    build:
+      context: ./business-services/iam-service/.
+    container_name: iam-dev
+    networks:
+      - minez-dev
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    depends_on:
+      minez-db-dev:
+        condition: service_healthy
+      minez-cache-dev:
+        condition: service_healthy
+      discovery-dev:
+        condition: service_started
 #
 #  auth-dev:
 #    build:

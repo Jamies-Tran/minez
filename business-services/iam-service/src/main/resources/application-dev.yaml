@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: iam-service
+  datasource:
+    url: jdbc:mysql://minez-db-dev:3306/iam
+    username: root
+    password: 123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+core:
+  permitAll: /**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-dev:8761/eureka

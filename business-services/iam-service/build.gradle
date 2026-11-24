@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.14'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+def env=rootProject.file(".env")
+if(env.exists()) {
+    env.eachLine {
+        l -> {
+            if(l.contains("=")) {
+                def line=l.split("=", 2)
+                System.setProperty(line[0].trim(), line[1].trim())
+            }
+        }
+    }
+}
+
+def GIT_USERNAME=System.getProperty("GIT_USERNAME")
+def GIT_TOKEN=System.getProperty("GIT_TOKEN")
+
+group = 'com.minez'
+version = '0.0.1-SNAPSHOT'
+description = 'iam-service'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+ext {
+    set('springCloudVersion', "2025.0.2")
+    set("coreStarterVersion", property("CORE_STARTER_VERSION"))
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name="GithubPackage"
+        url=uri("https://maven.pkg.github.com/Jamies-Tran/minez")
+        credentials{
+            username=GIT_USERNAME
+            password=GIT_TOKEN
+        }
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.boot:spring-boot-starter-validation:4.1.0-M4'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    annotationProcessor 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation "com.minez:core-starter:${coreStarterVersion}"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

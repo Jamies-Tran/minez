@@ -104,12 +104,13 @@ public record ApiResponse<T>(
     public static ApiResponse<String> ofApplicationException(ApplicationException applicationException) {
         Metadata metadata = Metadata.ofEmpty();
         return ApiResponse.<String>builder()
-                .responseAt(LocalDateTime.now())
+                .traceId(MDC.get("traceId"))
                 .isSuccess(false)
+                .dataType(EnumDataType.EMPTY.name())
+                .responseAt(LocalDateTime.now())
+                .metadata(metadata)
                 .errorCode(applicationException.getErrorCode().getCode())
                 .messages(List.of(applicationException.getMessage()))
-                .metadata(metadata)
-                .traceId(MDC.get("traceId"))
                 .build();
     }
 
