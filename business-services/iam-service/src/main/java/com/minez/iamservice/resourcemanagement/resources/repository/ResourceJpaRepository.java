@@ -4,10 +4,21 @@ import com.minez.iamservice.resourcemanagement.resources.domain.argument.Resourc
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.Optional;
+import java.util.UUID;
 
 interface ResourceJpaRepository extends JpaRepository<ResourceJpaEntity, Long> {
     Boolean existsByResourceCode(String resourceCode);
+
+    Boolean existsByResourceUuid(UUID resourceUuid);
+
+    Optional<ResourceJpaEntity> findByResourceUuid(UUID resourceUuid);
+
+    @Modifying
+    void deleteByResourceUuid(UUID resourceUuid);
 
     @Query("""
         SELECT r

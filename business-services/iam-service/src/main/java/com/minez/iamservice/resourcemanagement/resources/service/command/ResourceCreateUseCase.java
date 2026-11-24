@@ -43,9 +43,9 @@ public class ResourceCreateUseCase extends Command<ResourceCreate, Resource> {
     }
 
     private void validateResourceType(String resourceType) {
-        boolean isResourceTypeValid = Stream.of(Resource.ResourceType.values())
+        boolean valid = Stream.of(Resource.ResourceType.values())
                 .anyMatch(type -> Objects.equals(resourceType.toLowerCase(), type.name().toLowerCase()));
-        if (!isResourceTypeValid) {
+        if (!valid) {
             throw ResourceException.exception(ResourceException.ExceptionType.INVALID_TYPE);
         }
     }

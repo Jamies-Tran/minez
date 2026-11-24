@@ -4,10 +4,14 @@ import com.minez.corestarter.template.ApiResponse;
 import com.minez.corestarter.template.Result;
 import com.minez.iamservice.resourcemanagement.resources.controller.model.ResourceCreateRequest;
 import com.minez.iamservice.resourcemanagement.resources.controller.model.ResourceResponse;
+import com.minez.iamservice.resourcemanagement.resources.controller.model.ResourceUpdateRequest;
 import com.minez.iamservice.resourcemanagement.resources.domain.Resource;
 import com.minez.iamservice.resourcemanagement.resources.domain.argument.ResourceCreate;
 import com.minez.iamservice.resourcemanagement.resources.domain.argument.ResourceSearch;
-import com.minez.iamservice.resourcemanagement.resources.service.command.ResourceCreateUseCase;
+import com.minez.iamservice.resourcemanagement.resources.domain.argument.ResourceUpdate;
+import com.minez.iamservice.resourcemanagement.resources.domain.argument.ResourceUuid;
+import com.minez.iamservice.resourcemanagement.resources.service.command.*;
+import com.minez.iamservice.resourcemanagement.resources.service.query.ResourceSearchDetailUseCase;
 import com.minez.iamservice.resourcemanagement.resources.service.query.ResourceSearchPageUseCase;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1/api/resources")
@@ -28,6 +33,11 @@ import java.util.List;
 public class ResourceController {
     ResourceCreateUseCase createUseCase;
     ResourceSearchPageUseCase searchPageUseCase;
+    ResourceSearchDetailUseCase searchDetailUseCase;
+    ResourceUpdateUseCase  updateUseCase;
+    ResourceEnableUseCase enableUseCase;
+    ResourceDisableUseCase disableUseCase;
+    ResourceDeleteUseCase deleteUseCase;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -56,5 +66,52 @@ public class ResourceController {
         Page<Resource> resources = handle.data();
         Page<ResourceResponse> responses = resources.map(ResourceResponse::applyDomain);
         return ApiResponse.page(responses);
+    }
+
+    @GetMapping("/{resourceUuid}")
+    @ResponseStatus(HttpStatus.OK)
+    ApiResponse<ResourceResponse> findByResourceUuid(@PathVariable UUID resourceUuid) {
+        ResourceUuid query = new ResourceUuid(resourceUuid);
+        Result<Resource> find = searchDetailUseCase.handle(query);
+        Resource resource = find.data();
+        ResourceResponse response = ResourceResponse.applyDomain(resource);
+        return ApiResponse.value(response);
+    }
+
+    @PutMapping("/{resourceUuid}")
+    @ResponseStatus(HttpStatus.OK)
+    ApiResponse<ResourceResponse> update(@PathVariable UUID resourceUuid, @RequestBody @Validated ResourceUpdateRequest request) {
+        ResourceUpdate command = ResourceUpdate.applyRequest(resourceUuid, request);
+        Result<Resource> update = updateUseCase.handle(command);
+        Resource resource = update.data();
+        ResourceResponse response = ResourceResponse.applyDomain(resource);
+        return ApiResponse.value(response);
+    }
+
+    @PatchMapping("/{resourceUuid}/enable")
+    @ResponseStatus(HttpStatus.OK)
+    ApiResponse<ResourceResponse> enable(@PathVariable UUID resourceUuid) {
+        ResourceUuid command = new ResourceUuid(resourceUuid);
+        Result<Resource> enable = enableUseCase.handle(command);
+        Resource resource = enable.data();
+        ResourceResponse response = ResourceResponse.applyDomain(resource);
+        return ApiResponse.value(response);
+    }
+
+    @PatchMapping("/{resourceUuid}/disable")
+    @ResponseStatus(HttpStatus.OK)
+    ApiResponse<ResourceResponse> disable(@PathVariable UUID resourceUuid) {
+        ResourceUuid command = new ResourceUuid(resourceUuid);
+        Result<Resource> disable = disableUseCase.handle(command);
+        Resource resource = disable.data();
+        ResourceResponse response = ResourceResponse.applyDomain(resource);
+        return ApiResponse.value(response);
+    }
+
+    @DeleteMapping("/{resourceUuid}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteByResourceUuid(@PathVariable UUID resourceUuid) {
+        ResourceUuid command = new ResourceUuid(resourceUuid);
+        deleteUseCase.handle(command);
     }
 }

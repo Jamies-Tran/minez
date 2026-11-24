@@ -9,6 +9,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.sql.Types;
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -57,7 +58,19 @@ class ResourceJpaEntity extends BaseAuditorEntity {
         this.setResourceName(resource.resourceName());
         this.setResourceType(resource.resourceType());
         this.setDescription(resource.description());
-        this.setIsEnabled(resource.isEnabled());
+        Boolean isEnabled = resource.isEnabled();
+        if(Objects.nonNull(isEnabled)) {
+            this.setIsEnabled(isEnabled);
+        }
+
+    }
+
+    public void setEnable() {
+        this.setIsEnabled(true);
+    }
+
+    public void setDisable() {
+        this.setIsEnabled(false);
     }
 
     public Resource convertDomain() {

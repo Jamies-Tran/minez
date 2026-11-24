@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class FunctionLogAspect {
 
-    @Around("execution(* com.skedio..service..*(..))")
+    @Around("execution(* com.minez..service..*(..))")
     public Object logExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         long starter = System.currentTimeMillis();
         String method = joinPoint.getSignature().getName();

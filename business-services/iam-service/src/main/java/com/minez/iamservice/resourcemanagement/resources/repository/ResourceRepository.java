@@ -9,6 +9,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Repository
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -17,6 +20,10 @@ public class ResourceRepository {
 
     public Boolean existsResourceCode(String resourceCode) {
         return repository.existsByResourceCode(resourceCode);
+    }
+
+    public Boolean existsResourceUuid(UUID resourceUuid) {
+        return repository.existsByResourceUuid(resourceUuid);
     }
 
     public Resource save(Resource resource) {
@@ -29,5 +36,47 @@ public class ResourceRepository {
     public Page<Resource> findAll(ResourceSearch search, PageRequest pageRequest) {
         Page<ResourceJpaEntity> entity = repository.findAll(search, pageRequest);
         return entity.map(ResourceJpaEntity::convertDomain);
+    }
+
+    public Optional<Resource> findByResourceUuid(UUID resourceUuid) {
+        return repository.findByResourceUuid(resourceUuid)
+                .map(ResourceJpaEntity::convertDomain);
+    }
+
+    public Optional<Resource> update(UUID resourceUuid, Resource newResource) {
+        Optional<ResourceJpaEntity> find = repository.findByResourceUuid(resourceUuid);
+        if (find.isEmpty()) {
+            return Optional.empty();
+        }
+        ResourceJpaEntity entity = find.get();
+        entity.applyDomain(newResource);
+        ResourceJpaEntity saved = repository.save(entity);
+        return Optional.of(saved.convertDomain());
+    }
+
+    public Optional<Resource> enable(UUID resourceUuid) {
+        Optional<ResourceJpaEntity> find = repository.findByResourceUuid(resourceUuid);
+        if (find.isEmpty()) {
+            return Optional.empty();
+        }
+        ResourceJpaEntity entity = find.get();
+        entity.setEnable();
+        ResourceJpaEntity saved = repository.save(entity);
+        return Optional.of(saved.convertDomain());
+    }
+
+    public Optional<Resource> disable(UUID resourceUuid) {
+        Optional<ResourceJpaEntity> find = repository.findByResourceUuid(resourceUuid);
+        if (find.isEmpty()) {
+            return Optional.empty();
+        }
+        ResourceJpaEntity entity = find.get();
+        entity.setDisable();
+        ResourceJpaEntity saved = repository.save(entity);
+        return Optional.of(saved.convertDomain());
+    }
+
+    public void deleteByResourceUuid(UUID resourceUuid) {
+        repository.deleteByResourceUuid(resourceUuid);
     }
 }
