@@ -37,7 +37,7 @@ class ResourceJpaEntity extends BaseAuditorEntity {
     @Column(name = "resource_code", unique = true, nullable = false)
     String resourceCode;
 
-    @Column(name = "resource_name")
+    @Column(name = "resource_name", nullable = false)
     String resourceName;
 
     @Column(name = "resource_type", nullable = false)
@@ -46,10 +46,10 @@ class ResourceJpaEntity extends BaseAuditorEntity {
     @Column(name = "description")
     String description;
 
-    @Column(name = "is_enabled")
+    @Column(name = "is_enabled", nullable = false)
     Boolean isEnabled;
 
-    @Column(name = "search")
+    @Column(name = "search", nullable = false)
     String search;
 
     public void applyDomain(Resource resource) {

@@ -11,7 +11,8 @@ CREATE TABLE resources (
     created_by VARCHAR(526) DEFAULT NULL,
     created_at DATETIME DEFAULT NULL,
     updated_by VARCHAR(526) DEFAULT NULL,
-    updated_at DATETIME DEFAULT NULL
+    updated_at DATETIME DEFAULT NULL,
+    CONSTRAINT fk_resource_parent FOREIGN KEY (parent_uuid) REFERENCES resources(resource_uuid)
 );
 
 CREATE INDEX idx_parent_uuid ON resources(parent_uuid);

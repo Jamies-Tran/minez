@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -33,11 +34,14 @@ public class ResourceUpdateUseCase extends Command<ResourceUpdate, Resource> {
     private void validateCommand(ResourceUpdate command) {
         String resourceType = command.resourceType();
         validateResourceType(resourceType);
-        UUID resourceUuid = command.resourceUuid();
-        Resource exists = getResource(resourceUuid);
-        String existResourceCode = exists.resourceCode();
-        String newResourceCode = command.resourceCode();
-        validateExistResourceCode(existResourceCode, newResourceCode);
+        String resourceCode = command.resourceCode();
+        Optional<Resource> exist = getResource(resourceCode);
+        if(exist.isPresent()) {
+            String existResourceCode = exist.get().resourceCode();
+            String newResourceCode = command.resourceCode();
+            validateExistResourceCode(existResourceCode, newResourceCode);
+        }
+
     }
 
     private Resource update(UUID resourceUuid, Resource newResource) {
@@ -45,9 +49,8 @@ public class ResourceUpdateUseCase extends Command<ResourceUpdate, Resource> {
                 .orElseThrow(() -> ResourceException.exception(ResourceException.ExceptionType.NOT_FOUND));
     }
 
-    private Resource getResource(UUID resourceUuid) {
-        return  resources.findByResourceUuid(resourceUuid)
-                .orElseThrow(() -> ResourceException.exception(ResourceException.ExceptionType.NOT_FOUND));
+    private Optional<Resource> getResource(String resourceCode) {
+        return  resources.findByResourceCode(resourceCode);
     }
 
     private void validateResourceType(String resourceType) {

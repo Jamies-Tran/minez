@@ -21,18 +21,9 @@ public class ResourceDisableUseCase extends Command<ResourceUuid, Resource> {
 
     @Override
     public Result<Resource> handle(ResourceUuid command) {
-        validateCommand(command );
         UUID resourceUuid = command.resourceUuid();
         Resource disabled = disableResource(resourceUuid);
         return Result.value(disabled);
-    }
-
-    private void validateCommand(ResourceUuid command) {
-        UUID resourceUuid = command.resourceUuid();
-        Boolean exist = resources.existsResourceUuid(resourceUuid);
-        if(!exist) {
-            throw ResourceException.exception(ResourceException.ExceptionType.NOT_FOUND);
-        }
     }
 
     private Resource disableResource(UUID resourceUuid) {

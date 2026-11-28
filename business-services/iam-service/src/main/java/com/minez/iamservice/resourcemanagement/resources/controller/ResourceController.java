@@ -4,8 +4,10 @@ import com.minez.corestarter.template.ApiResponse;
 import com.minez.corestarter.template.Result;
 import com.minez.iamservice.resourcemanagement.resources.controller.model.ResourceCreateRequest;
 import com.minez.iamservice.resourcemanagement.resources.controller.model.ResourceResponse;
+import com.minez.iamservice.resourcemanagement.resources.controller.model.ResourceTreeResponse;
 import com.minez.iamservice.resourcemanagement.resources.controller.model.ResourceUpdateRequest;
 import com.minez.iamservice.resourcemanagement.resources.domain.Resource;
+import com.minez.iamservice.resourcemanagement.resources.domain.ResourceTree;
 import com.minez.iamservice.resourcemanagement.resources.domain.argument.ResourceCreate;
 import com.minez.iamservice.resourcemanagement.resources.domain.argument.ResourceSearch;
 import com.minez.iamservice.resourcemanagement.resources.domain.argument.ResourceUpdate;
@@ -13,6 +15,7 @@ import com.minez.iamservice.resourcemanagement.resources.domain.argument.Resourc
 import com.minez.iamservice.resourcemanagement.resources.service.command.*;
 import com.minez.iamservice.resourcemanagement.resources.service.query.ResourceSearchDetailUseCase;
 import com.minez.iamservice.resourcemanagement.resources.service.query.ResourceSearchPageUseCase;
+import com.minez.iamservice.resourcemanagement.resources.service.query.ResourceSearchTreeUseCase;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -33,6 +36,7 @@ import java.util.UUID;
 public class ResourceController {
     ResourceCreateUseCase createUseCase;
     ResourceSearchPageUseCase searchPageUseCase;
+    ResourceSearchTreeUseCase searchTreeUseCase;
     ResourceSearchDetailUseCase searchDetailUseCase;
     ResourceUpdateUseCase  updateUseCase;
     ResourceEnableUseCase enableUseCase;
@@ -65,6 +69,25 @@ public class ResourceController {
         Result<Page<Resource>> handle = searchPageUseCase.handle(query);
         Page<Resource> resources = handle.data();
         Page<ResourceResponse> responses = resources.map(ResourceResponse::applyDomain);
+        return ApiResponse.page(responses);
+    }
+
+    @GetMapping("/parent/tree")
+    @ResponseStatus(HttpStatus.OK)
+    ApiResponse<ResourceTreeResponse> findTree(
+            @RequestParam(required = false, defaultValue = "") String search,
+            @RequestParam(required = false, defaultValue = "") List<String> resourceCodes,
+            @RequestParam(required = false, defaultValue = "") List<String> resourceTypes,
+            @RequestParam(required = false, defaultValue = "") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) List<LocalDateTime> createdAtRange,
+            @RequestParam(required = false, defaultValue = "") Boolean isEnabled,
+            @RequestParam(required = false, defaultValue = "createdAt_desc") String sorter,
+            @RequestParam(required = false, defaultValue = "0") Integer current,
+            @RequestParam(required = false, defaultValue = "25") Integer pageSize
+    ) {
+        ResourceSearch query = new ResourceSearch(search, resourceCodes, resourceTypes, createdAtRange, isEnabled, sorter, current, pageSize);
+        Result<Page<ResourceTree>> handle = searchTreeUseCase.handle(query);
+        Page<ResourceTree> resources = handle.data();
+        Page<ResourceTreeResponse> responses = resources.map(ResourceTreeResponse::applyDomain);
         return ApiResponse.page(responses);
     }
 

@@ -21,18 +21,9 @@ public class ResourceEnableUseCase extends Command<ResourceUuid, Resource> {
 
     @Override
     public Result<Resource> handle(ResourceUuid command) {
-        validateCommand(command );
         UUID resourceUuid = command.resourceUuid();
         Resource enabled = enableResource(resourceUuid);
         return Result.value(enabled);
-    }
-
-    private void validateCommand(ResourceUuid command) {
-        UUID resourceUuid = command.resourceUuid();
-        Boolean exist = resources.existsResourceUuid(resourceUuid);
-        if(!exist) {
-            throw ResourceException.exception(ResourceException.ExceptionType.NOT_FOUND);
-        }
     }
 
     private Resource enableResource(UUID resourceUuid) {

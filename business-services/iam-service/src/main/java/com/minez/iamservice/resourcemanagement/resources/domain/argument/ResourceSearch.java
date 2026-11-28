@@ -3,10 +3,12 @@ package com.minez.iamservice.resourcemanagement.resources.domain.argument;
 import com.minez.corestarter.utils.SorterUtils;
 import com.minez.corestarter.utils.StringConvertUtils;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public record ResourceSearch(
@@ -31,15 +33,15 @@ public record ResourceSearch(
     }
 
     public Boolean resourceCodesEmpty() {
-        return resourceCodes == null || resourceCodes.isEmpty();
+        return CollectionUtils.isEmpty(resourceCodes);
     }
 
     public Boolean resourceTypesEmpty() {
-        return resourceTypes == null || resourceTypes.isEmpty();
+        return CollectionUtils.isEmpty(resourceTypes);
     }
 
     public Boolean createdAtRangeEmpty() {
-        return createdAtRange == null || createdAtRange.isEmpty();
+        return CollectionUtils.isEmpty(createdAtRange);
     }
 
     public Boolean isEnabledEmpty() {
@@ -47,7 +49,7 @@ public record ResourceSearch(
     }
 
     public LocalDateTime createdAtRangeBegin() {
-        if(createdAtRange == null || createdAtRange.isEmpty()) {
+        if(CollectionUtils.isEmpty(createdAtRange)) {
             return null;
         }
         return createdAtRange.getFirst();

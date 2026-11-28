@@ -5,6 +5,8 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import org.springframework.util.StringUtils;
 
+import java.util.Objects;
+
 class ResourceEntityListener {
     @PrePersist
     public void prePersist(ResourceJpaEntity entity) {
@@ -13,9 +15,8 @@ class ResourceEntityListener {
         String resourceCode =  StringConvertUtils.normalizeWhiteSpace(entity.getResourceCode());
         String computeSearch = "%s%s".formatted(resourceName, resourceCode);
         entity.setSearch(computeSearch);
-        if(isEnabled == null) {
-            Boolean computeIsEnabled = true;
-            entity.setIsEnabled(computeIsEnabled);
+        if(Objects.isNull(isEnabled)) {
+            entity.setIsEnabled(true);
         }
     }
 

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,8 +39,18 @@ public class ResourceRepository {
         return entity.map(ResourceJpaEntity::convertDomain);
     }
 
+    public Page<Resource> findTopTree(ResourceSearch search, PageRequest pageRequest) {
+        Page<ResourceJpaEntity> entity = repository.findTopTree(search, pageRequest);
+        return entity.map(ResourceJpaEntity::convertDomain);
+    }
+
     public Optional<Resource> findByResourceUuid(UUID resourceUuid) {
         return repository.findByResourceUuid(resourceUuid)
+                .map(ResourceJpaEntity::convertDomain);
+    }
+
+    public Optional<Resource> findByResourceCode(String resourceCode) {
+        return repository.findByResourceCode(resourceCode)
                 .map(ResourceJpaEntity::convertDomain);
     }
 
@@ -78,5 +89,12 @@ public class ResourceRepository {
 
     public void deleteByResourceUuid(UUID resourceUuid) {
         repository.deleteByResourceUuid(resourceUuid);
+    }
+
+    public List<Resource> findAllByParentUuidIn(List<UUID> parentUuids) {
+        return repository.findAllByParentUuidIn(parentUuids)
+                .stream()
+                .map(ResourceJpaEntity::convertDomain)
+                .toList();
     }
 }
